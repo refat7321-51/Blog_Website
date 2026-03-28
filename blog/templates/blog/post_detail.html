@@ -1,0 +1,170 @@
+{% extends 'blog/base.html' %}
+{% block title %}{{ post.title }} — DjangoBlog{% endblock %}
+
+{% block content %}
+
+<div class="post-detail-wrap">
+
+  <!-- MAIN COLUMN -->
+  <div>
+    <article class="post-detail-main">
+
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-detail-image" />
+      {% endif %}
+
+      <div class="post-detail-content">
+        <h1 class="post-detail-title">{{ post.title }}</h1>
+
+        <div class="post-meta-bar">
+          <!-- Author profile pic -->
+          <div class="author-avatar author-avatar-lg">
+            {% if post.author.profile.profile_pic %}
+              <img src="{{ post.author.profile.profile_pic.url }}" class="avatar-img" alt="pic" />
+            {% else %}
+              {{ post.author.username|first|upper }}
+            {% endif %}
+          </div>
+          <div>
+            <div style="font-weight:700;">
+              <a href="{% url 'profile' post.author.username %}">{{ post.author.username }}</a>
+              {% if post.author.is_staff %}<span class="badge badge-admin">Admin</span>{% endif %}
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-muted);">{{ post.created_date|date:"F d, Y • g:i A" }}</div>
+          </div>
+        </div>
+
+        <div class="post-body">{{ post.content }}</div>
+      </div>
+
+      <div class="post-actions-bar">
+        {% if user.is_authenticated %}
+          <button class="like-btn {% if user_liked %}liked{% endif %}" id="likeBtn" data-post-id="{{ post.pk }}">
+            <span class="heart">{% if user_liked %}❤️{% else %}🤍{% endif %}</span>
+            <span id="likeCount">{{ post.total_likes }}</span> Likes
+          </button>
+        {% else %}
+          <a href="{% url 'login' %}?next={{ request.path }}" class="like-btn">🤍 {{ post.total_likes }} Likes</a>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          {% if user == post.author or user.is_staff %}
+            <a href="{% url 'post_edit' post.pk %}" class="btn btn-secondary btn-sm">✏️ Edit</a>
+            <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger btn-sm">🗑️ Delete</a>
+          {% endif %}
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn btn-light btn-sm" style="margin-left:auto;">← Back</a>
+      </div>
+    </article>
+
+    <!-- COMMENTS -->
+    <div class="post-detail-main" style="margin-top:1.5rem;">
+      <div class="comments-section">
+        <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1.25rem;">💬 Comments ({{ post.total_comments }})</h3>
+
+        {% if user.is_authenticated %}
+          <div class="comment-form-wrap">
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;">
+              <div class="author-avatar">
+                {% if user.profile.profile_pic %}
+                  <img src="{{ user.profile.profile_pic.url }}" class="avatar-img" alt="pic" />
+                {% else %}
+                  {{ user.username|first|upper }}
+                {% endif %}
+              </div>
+              <strong>{{ user.username }}</strong>
+            </div>
+            <form method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                {{ comment_form.content }}
+                {% if comment_form.content.errors %}<p class="form-error">{{ comment_form.content.errors.0 }}</p>{% endif %}
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+            </form>
+          </div>
+        {% else %}
+          <div style="background:var(--light-bg);padding:1rem;border-radius:var(--radius);margin-bottom:1.25rem;text-align:center;border:1px solid var(--border);">
+            <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to leave a comment.
+          </div>
+        {% endif %}
+
+        {% if comments %}
+          <div class="comment-list">
+            {% for comment in comments %}
+              <div class="comment-item">
+                <div class="comment-header">
+                  <div class="comment-author">
+                    <div class="author-avatar">
+                      {% if comment.author.profile.profile_pic %}
+                        <img src="{{ comment.author.profile.profile_pic.url }}" class="avatar-img" alt="pic" />
+                      {% else %}
+                        {{ comment.author.username|first|upper }}
+                      {% endif %}
+                    </div>
+                    <a href="{% url 'profile' comment.author.username %}">{{ comment.author.username }}</a>
+                    {% if comment.author.is_staff %}<span class="badge badge-admin">Admin</span>{% endif %}
+                  </div>
+                  <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span class="comment-date">{{ comment.created_date|date:"M d, Y • g:i A" }}</span>
+                    {% if user.is_authenticated %}
+                      {% if user == comment.author or user.is_staff %}
+                        <form method="post" action="{% url 'comment_delete' comment.pk %}" style="display:inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this comment?')">🗑️</button>
+                        </form>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </div>
+                <p class="comment-content">{{ comment.content }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state" style="padding:2rem;"><p>No comments yet. Be the first!</p></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">About Author</div>
+      <div style="text-align:center;">
+        <div class="author-avatar author-avatar-lg" style="width:72px;height:72px;font-size:1.5rem;margin:0 auto 0.75rem;">
+          {% if post.author.profile.profile_pic %}
+            <img src="{{ post.author.profile.profile_pic.url }}" class="avatar-img" alt="pic" />
+          {% else %}
+            {{ post.author.username|first|upper }}
+          {% endif %}
+        </div>
+        <h4 style="font-weight:700;">{{ post.author.username }}</h4>
+        {% if post.author.profile.bio %}
+          <p style="font-size:0.83rem;color:var(--text-muted);margin:0.4rem 0 0.75rem;">{{ post.author.profile.bio|truncatechars:80 }}</p>
+        {% else %}
+          <p style="font-size:0.83rem;color:var(--text-muted);margin:0.25rem 0 0.75rem;">Member since {{ post.author.date_joined|date:"M Y" }}</p>
+        {% endif %}
+        <a href="{% url 'profile' post.author.username %}" class="btn btn-light btn-sm">View Profile</a>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">Post Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:center;">
+        <div style="background:var(--light-bg);padding:0.75rem;border-radius:8px;">
+          <div style="font-size:1.5rem;font-weight:800;color:var(--danger);">{{ post.total_likes }}</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">Likes</div>
+        </div>
+        <div style="background:var(--light-bg);padding:0.75rem;border-radius:8px;">
+          <div style="font-size:1.5rem;font-weight:800;color:var(--primary);">{{ post.total_comments }}</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">Comments</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+{% endblock %}

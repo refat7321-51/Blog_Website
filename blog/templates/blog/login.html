@@ -1,0 +1,45 @@
+{% extends 'blog/base.html' %}
+{% block title %}Login — DjangoBlog{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h2 class="auth-title">Welcome Back 👋</h2>
+    <p class="auth-subtitle">Login to your DjangoBlog account</p>
+
+    <form method="post" autocomplete="off">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+          <p class="form-error">{{ form.username.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+          <p class="form-error">{{ form.password.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-error" style="margin-bottom:1rem;">
+          {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;margin-top:0.5rem;">
+        Login
+      </button>
+    </form>
+
+    <p style="text-align:center;margin-top:1.5rem;font-size:0.92rem;color:var(--text-muted);">
+      Don't have an account? <a href="{% url 'register' %}" style="font-weight:600;">Register here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

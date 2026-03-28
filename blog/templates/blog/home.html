@@ -1,0 +1,79 @@
+{% extends 'blog/base.html' %}
+{% block title %}Home — DjangoBlog{% endblock %}
+
+{% block content %}
+
+{% if not user.is_authenticated %}
+<div class="hero">
+  <h1>Welcome to DjangoBlog ✍️</h1>
+  <p>A place to share your thoughts, ideas, and stories with the world.</p>
+  <div class="hero-actions">
+    <a href="{% url 'register' %}" class="btn btn-outline btn-lg">🚀 Get Started</a>
+    <a href="{% url 'login' %}" class="btn btn-light btn-lg">Login</a>
+  </div>
+</div>
+{% endif %}
+
+<div class="section-header">
+  <h2 class="section-title">📝 Latest Posts</h2>
+  {% if user.is_authenticated %}
+    <a href="{% url 'post_create' %}" class="btn btn-primary">✏️ New Post</a>
+  {% endif %}
+</div>
+
+{% if posts %}
+  <div class="posts-grid">
+    {% for post in posts %}
+    <article class="post-card">
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image" loading="lazy" />
+      {% else %}
+        <div class="post-card-image-placeholder">📄</div>
+      {% endif %}
+
+      <div class="post-card-body">
+        <div class="post-card-meta">
+          <!-- Profile pic or initial -->
+          <div class="author-avatar">
+            {% if post.author.profile.profile_pic %}
+              <img src="{{ post.author.profile.profile_pic.url }}" class="avatar-img" alt="pic" />
+            {% else %}
+              {{ post.author.username|first|upper }}
+            {% endif %}
+          </div>
+          <a href="{% url 'profile' post.author.username %}">{{ post.author.username }}</a>
+          <span>·</span>
+          <span>{{ post.created_date|date:"M d, Y" }}</span>
+        </div>
+
+        <h3 class="post-card-title">
+          <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+        </h3>
+        <p class="post-card-excerpt">{{ post.content|truncatechars:150 }}</p>
+
+        <div class="post-card-footer">
+          <div class="post-stats">
+            <span class="stat-item">❤️ {{ post.total_likes }}</span>
+            <span class="stat-item">💬 {{ post.total_comments }}</span>
+          </div>
+          <a href="{% url 'post_detail' post.pk %}" class="btn btn-light btn-sm">Read more →</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No posts yet</h3>
+    <p>Be the first to share something!</p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'post_create' %}" class="btn btn-primary" style="margin-top:1rem;">✏️ Create First Post</a>
+    {% else %}
+      <a href="{% url 'register' %}" class="btn btn-primary" style="margin-top:1rem;">Join Now</a>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% endblock %}

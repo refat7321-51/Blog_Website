@@ -1,0 +1,99 @@
+{% extends 'blog/base.html' %}
+{% block title %}Edit Profile — DjangoBlog{% endblock %}
+
+{% block content %}
+
+<div class="profile-edit-wrap">
+  <div class="form-card">
+    <h2 class="form-title">⚙️ Edit Your Profile</h2>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- Profile Pic Preview -->
+      <div class="form-group">
+        <label class="form-label">Profile Picture</label>
+        <div class="profile-pic-preview-wrap">
+          <div class="pic-preview-circle" id="picPreviewCircle">
+            {% if profile_obj.profile_pic %}
+              <img src="{{ profile_obj.profile_pic.url }}" id="picPreviewImg" alt="pic" />
+            {% else %}
+              <span id="picInitial">{{ user.username|first|upper }}</span>
+              <img src="#" id="picPreviewImg" alt="pic" style="display:none;" />
+            {% endif %}
+          </div>
+          <div>
+            <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.5rem;">Upload a square image for best results (JPG, PNG)</p>
+            {{ form.profile_pic }}
+          </div>
+        </div>
+        {% if form.profile_pic.errors %}<p class="form-error">{{ form.profile_pic.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          {{ form.last_name }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<p class="form-error">{{ form.email.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        {{ form.bio }}
+        {% if form.bio.errors %}<p class="form-error">{{ form.bio.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        {{ form.location }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Website</label>
+        {{ form.website }}
+        {% if form.website.errors %}<p class="form-error">{{ form.website.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Save Changes</button>
+        <a href="{% url 'profile' user.username %}" class="btn btn-light btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Profile pic live preview
+  const picInput = document.getElementById('id_profile_pic');
+  const picPreviewImg = document.getElementById('picPreviewImg');
+  const picInitial = document.getElementById('picInitial');
+
+  if (picInput) {
+    picInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          picPreviewImg.src = e.target.result;
+          picPreviewImg.style.display = 'block';
+          if (picInitial) picInitial.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+</script>
+{% endblock %}

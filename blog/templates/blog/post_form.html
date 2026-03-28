@@ -1,0 +1,64 @@
+{% extends 'blog/base.html' %}
+{% block title %}{{ action }} Post — DjangoBlog{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+  <h2 class="form-title">
+    {% if action == 'Create' %}✏️ Create New Post{% else %}📝 Edit Post{% endif %}
+  </h2>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Title -->
+    <div class="form-group">
+      <label class="form-label" for="{{ form.title.id_for_label }}">Post Title *</label>
+      {{ form.title }}
+      {% if form.title.errors %}
+        <p class="form-error">{{ form.title.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Content -->
+    <div class="form-group">
+      <label class="form-label" for="{{ form.content.id_for_label }}">Content *</label>
+      {{ form.content }}
+      {% if form.content.errors %}
+        <p class="form-error">{{ form.content.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Image -->
+    <div class="form-group">
+      <label class="form-label" for="{{ form.image.id_for_label }}">Post Image (optional)</label>
+      {% if post and post.image %}
+        <div style="margin-bottom:0.5rem;">
+          <img src="{{ post.image.url }}" style="max-width:200px;border-radius:8px;border:2px solid var(--border);" />
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-top:0.3rem;">Current image — upload new to replace</p>
+        </div>
+      {% endif %}
+      {{ form.image }}
+      {% if form.image.errors %}
+        <p class="form-error">{{ form.image.errors.0 }}</p>
+      {% endif %}
+      <div class="img-preview-wrap">
+        <img id="imagePreview" src="#" alt="Preview" />
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+      <button type="submit" class="btn btn-primary btn-lg">
+        {% if action == 'Create' %}🚀 Publish Post{% else %}💾 Save Changes{% endif %}
+      </button>
+      {% if post %}
+        <a href="{% url 'post_detail' post.pk %}" class="btn btn-light btn-lg">Cancel</a>
+      {% else %}
+        <a href="{% url 'home' %}" class="btn btn-light btn-lg">Cancel</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+{% endblock %}

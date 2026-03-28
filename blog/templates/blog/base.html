@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Django Blog{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="{% url 'home' %}">✍️ <span>Django</span>Blog</a>
+
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="navbar-nav" id="navMenu">
+        <li><a class="nav-link" href="{% url 'home' %}">🏠 Home</a></li>
+        {% if user.is_authenticated %}
+          <li><a class="nav-link" href="{% url 'post_create' %}">✏️ New Post</a></li>
+          <li>
+            <a class="nav-link" href="{% url 'profile' user.username %}">
+              {% if user.profile.profile_pic %}
+                <img src="{{ user.profile.profile_pic.url }}" class="nav-profile-pic" alt="pic" />
+              {% endif %}
+              {{ user.username }}
+            </a>
+          </li>
+          <li><a class="nav-link" href="{% url 'profile_edit' %}">⚙️ Edit Profile</a></li>
+          {% if user.is_staff %}
+            <li><a class="nav-link" href="/admin/" target="_blank">🛠️ Admin</a></li>
+          {% endif %}
+          <li>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="nav-link btn-nav-primary" style="background:none;border:none;cursor:pointer;">🚪 Logout</button>
+            </form>
+          </li>
+        {% else %}
+          <li><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+          <li><a class="nav-link btn-nav-primary" href="{% url 'register' %}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- MESSAGES -->
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {% if message.tags == 'success' %}✅{% elif message.tags == 'error' or message.tags == 'danger' %}❌{% elif message.tags == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 DjangoBlog — Developed By REFAT & ❤️ using Django & Python</p>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,107 @@
+{% extends 'blog/base.html' %}
+{% block title %}{{ profile_user.username }}'s Profile — DjangoBlog{% endblock %}
+
+{% block content %}
+
+<!-- Profile Header -->
+<div class="profile-header">
+  <!-- Big profile pic -->
+  <div class="profile-avatar-lg">
+    {% if profile_obj.profile_pic %}
+      <img src="{{ profile_obj.profile_pic.url }}" class="profile-page-pic" alt="Profile" />
+    {% else %}
+      {{ profile_user.username|first|upper }}
+    {% endif %}
+  </div>
+
+  <div style="flex:1;">
+    <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:0.2rem;">
+      {{ profile_user.username }}
+      {% if profile_user.is_staff %}<span class="badge badge-admin" style="font-size:0.65rem;vertical-align:middle;">Admin</span>{% endif %}
+    </h1>
+
+    {% if profile_user.first_name or profile_user.last_name %}
+      <p style="opacity:0.9;font-size:1rem;margin-bottom:0.2rem;">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+    {% endif %}
+
+    {% if profile_obj.bio %}
+      <p style="opacity:0.85;font-size:0.9rem;max-width:500px;margin-bottom:0.5rem;">{{ profile_obj.bio }}</p>
+    {% endif %}
+
+    <div class="profile-info-list">
+      {% if profile_obj.location %}
+        <span>📍 {{ profile_obj.location }}</span>
+      {% endif %}
+      {% if profile_obj.website %}
+        <span>🌐 <a href="{{ profile_obj.website }}" target="_blank" style="color:#93c5fd;">{{ profile_obj.website }}</a></span>
+      {% endif %}
+      <span style="color: white;">📅 Member since {{ profile_user.date_joined|date:"F Y" }}</span>
+    </div>
+
+    <div class="profile-stats" style="margin-top:1rem;">
+      <div class="profile-stat">
+        <strong>{{ posts.count }}</strong>
+        <span>Posts</span>
+      </div>
+    </div>
+  </div>
+
+  {% if user == profile_user %}
+    <a href="{% url 'profile_edit' %}" class="btn btn-outline" style="align-self:flex-start;">⚙️ Edit Profile</a>
+  {% endif %}
+</div>
+
+<!-- Posts -->
+<div class="section-header">
+  <h2 class="section-title">Posts by {{ profile_user.username }}</h2>
+  {% if user == profile_user %}
+    <a href="{% url 'post_create' %}" class="btn btn-primary">✏️ New Post</a>
+  {% endif %}
+</div>
+
+{% if posts %}
+  <div class="posts-grid">
+    {% for post in posts %}
+    <article class="post-card">
+      {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-card-image" loading="lazy" />
+      {% else %}
+        <div class="post-card-image-placeholder">📄</div>
+      {% endif %}
+
+      <div class="post-card-body">
+        <div class="post-card-meta">
+          <span>{{ post.created_date|date:"M d, Y" }}</span>
+        </div>
+        <h3 class="post-card-title">
+          <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+        </h3>
+        <p class="post-card-excerpt">{{ post.content|truncatechars:120 }}</p>
+        <div class="post-card-footer">
+          <div class="post-stats">
+            <span class="stat-item">❤️ {{ post.total_likes }}</span>
+            <span class="stat-item">💬 {{ post.total_comments }}</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <a href="{% url 'post_detail' post.pk %}" class="btn btn-light btn-sm">Read →</a>
+            {% if user == post.author or user.is_staff %}
+              <a href="{% url 'post_edit' post.pk %}" class="btn btn-secondary btn-sm">✏️</a>
+              <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No posts yet</h3>
+    {% if user == profile_user %}
+      <a href="{% url 'post_create' %}" class="btn btn-primary" style="margin-top:1rem;">Write your first post</a>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% endblock %}
