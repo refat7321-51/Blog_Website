@@ -26,11 +26,11 @@ python manage.py migrate
 
 
 ### Step 4 — Admin user 
-
+```
 python manage.py createsuperuser
 
 Username, email, password 
-
+```
 ### Step 5 — run Server 
 ```bash
 python manage.py runserver
