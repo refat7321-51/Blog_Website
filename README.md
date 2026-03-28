@@ -10,8 +10,8 @@ https://mdrefat0.pythonanywhere.com/
 
 ### Step 1 — Create Virtual Environment 
 ```bash
-python -m venv venv
-venv\Scripts\activate        # Windows
+1-python -m venv venv
+2-venv\Scripts\activate        # Windows
 ```
 
 ### Step 2 — Packages install করো
