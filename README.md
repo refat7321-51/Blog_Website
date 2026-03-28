@@ -33,5 +33,7 @@ python manage.py runserver
 
 
 ### Admin Panel Login
-Username: admin123
-Password: Admin@@@
+```
+Username: Only For Admin
+Password: Only For Admin
+```
