@@ -14,7 +14,7 @@ https://mdrefat0.pythonanywhere.com/
 2-venv\Scripts\activate        # Windows
 ```
 
-### Step 2 — Packages install করো
+### Step 2 — Packages install
 ```bash
 pip install -r requirements.txt
 ```
