@@ -1,7 +1,7 @@
 ### Website View
-```
+
 https://mdrefat0.pythonanywhere.com/
-```
+
 
 
 # ✍️ Django Blog Website — Module 21
