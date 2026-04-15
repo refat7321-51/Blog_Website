@@ -1,6 +1,4 @@
-/* ============================================
-   BLOG WEBSITE - MAIN STYLESHEET
-   ============================================ */
+
 
 :root {
   --primary: #2563eb;
@@ -814,9 +812,7 @@ footer a { color: #60a5fa; }
   .post-meta-bar { gap: 0.6rem; font-size: 0.82rem; }
 }
 
-/* ============================================
-   PROFILE PIC STYLES
-   ============================================ */
+/* PROFILE PIC STYLES */
 
 .avatar-img {
   width: 100%;
