@@ -49,7 +49,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'blog_project.wsgi.application'
 
-# ✅ SQLite — কোনো database setup লাগবে না!
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
