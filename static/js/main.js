@@ -1,6 +1,5 @@
-// ============================================
+
 // BLOG WEBSITE - MAIN JAVASCRIPT
-// ============================================
 
 document.addEventListener('DOMContentLoaded', function () {
 
